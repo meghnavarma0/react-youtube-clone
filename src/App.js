@@ -1,27 +1,58 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Grid } from '@material-ui/core';
-import { SearchBar, VideoDetail } from './components';
+import { SearchBar, VideoDetail, VideoList } from './components';
+import youtube from './api/Youtube';
 
-function App() {
-	return (
-		<div className='App'>
-			<Grid justify='center' container spacing={16}>
-				<Grid item xs={12}>
-					<Grid container spacing={16}>
-						<Grid item spacing={12} xs={12}>
-							<SearchBar />
-						</Grid>
-						<Grid item spacing={12} xs={8}>
-							<VideoDetail />
-						</Grid>
-						<Grid item spacing={12} xs={4}>
-							{/* Video List */}
+class App extends Component {
+	state = {
+		videos: [],
+		selectedVideo: null
+	};
+	componentDidMount() {
+		this.handleSubmit('Shin chan');
+	}
+	onVideoSelect = video => {
+		this.setState({ selectedVideo: video });
+	};
+	handleSubmit = async searchTerm => {
+		const response = await youtube.get('search', {
+			params: {
+				part: 'snippet',
+				maxResults: 5,
+				key: 'AIzaSyBNPu5ClRIe0QpOMOVDiQ1vV95zNoKt604',
+				q: searchTerm
+			}
+		});
+		this.setState({
+			videos: response.data.items,
+			selectedVideo: response.data.items[0]
+		});
+	};
+	render() {
+		const { selectedVideo, videos } = this.state;
+		return (
+			<div className='App'>
+				<Grid justify='center' container spacing={10}>
+					<Grid item xs={12}>
+						<Grid container spacing={10}>
+							<Grid item xs={12}>
+								<SearchBar onSubmitForm={this.handleSubmit} />
+							</Grid>
+							<Grid item xs={8}>
+								<VideoDetail video={selectedVideo} />
+							</Grid>
+							<Grid item xs={4}>
+								<VideoList
+									videos={videos}
+									onVideoSelect={this.onVideoSelect}
+								/>
+							</Grid>
 						</Grid>
 					</Grid>
 				</Grid>
-			</Grid>
-		</div>
-	);
+			</div>
+		);
+	}
 }
 
 export default App;

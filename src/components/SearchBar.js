@@ -11,9 +11,9 @@ class SearchBar extends Component {
 	};
 	handleSubmit = event => {
 		const { searchTerm } = this.state;
-		console.log(searchTerm);
+
 		const { onSubmitForm } = this.props;
-		onSubmitForm();
+		onSubmitForm(searchTerm);
 		event.preventDefault();
 	};
 	render() {
